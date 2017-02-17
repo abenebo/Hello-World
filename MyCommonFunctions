@@ -1,0 +1,107 @@
+function GetdriveDevice( $strComputer) {
+$aryComputers = "loopback","localhost"
+foreach ( $strComputer in $aryComputers)
+          
+        {
+
+        "Hard drive on: " + $strComputer
+        Get-WmiObject -Class win32_logicaldisk -ComputerName $strComputer |
+        where {
+            $_.drivetype -eq $intDriveType        
+        
+        }
+
+    }            
+
+}
+break
+
+function GetSvchostprocess ($strProcess){
+$strProcess = "svchost"
+Get-Process |
+foreach ( $_.name ) {
+    if ( $_.name -eq $strProcess) {
+    
+    Write-Output  $_.Id 
+
+         }
+
+    }
+}
+
+　
+　
+break
+
+function Get-usbhub($usb) {
+Get-WmiObject win32_usbhub |
+ForEach-Object `
+-begin {Write-Output "USB hubs on:" $(Get-Item Env:\COMPUTERNAME).value }`
+-process { $_.ppnDeviceID} `
+-end {Write-Output "The command completed at $(Get-Date)"}
+}
+    
+break
+
+function GetTopProcess($topprocess){
+$topprocess = Get-Process|
+Sort-Object WorkingSet -Descending |
+Select-Object -First 5
+
+}
+
+　
+function GetServiceStatus($service){
+
+$service = Get-Service |
+Sort-Object status -Descending |
+foreach {
+    if ( $_.status -eq "stopped")
+    {Write-Host $_.name $_.Status -ForegroundColor Red}
+    
+    elseif ( $_.status -eq "running" ) 
+    
+    {Write-Host $_.name $_.status -ForegroundColor Yellow}
+
+    }
+
+}
+
+function funArg()
+{
+switch ($args)
+
+{
+
+"all" { Get-WmiObject win32_logicaldisk }
+"C"   { (Get-WmiObject win32_logicaldisk)[1] }
+"free"{ (Get-WmiObject win32_logicaldisk)[1].freespace}
+
+　
+    }
+
+}
+
+　
+break
+
+function GetDHCPServer(){
+$a = ipconfig /all
+
+Switch -Wildcard ($a)
+{
+"*DHCP Server*" {Write-Host $switch.current}
+    }
+}
+
+break
+
+function GetOSVersion(){
+$StrPattern = "Version"
+$text = net config workstation
+switch -Regex ($text)
+{
+$StrPattern {WGrerite-Host $switch.current}
+    }
+
+} 
